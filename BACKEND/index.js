@@ -7,7 +7,7 @@ const usuariosRutas = require('./routes/usuarios');
 const eventosRutas = require('./routes/eventos');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 // Middlewares
 app.use(cors());
