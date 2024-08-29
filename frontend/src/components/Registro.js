@@ -1,33 +1,37 @@
-// src/components/Registro.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Registro() {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const navigate = useNavigate();
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
     try {
-      const respuesta = await fetch('http://localhost:5000/api/registro', {
+      const respuesta = await fetch('http://localhost:5000/api/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ nombre, correo, contrasena }),
       });
       if (!respuesta.ok) {
-        throw new Error('Error al registrarse');
+        const errorData = await respuesta.json();
+        throw new Error(errorData.mensaje || 'Error al registrarse');
       }
       const datos = await respuesta.json();
       localStorage.setItem('token', datos.token);
-      alert('Registro exitoso');
+      navigate('/eventos');
     } catch (error) {
-      alert(error.message);
+      alert(error.message); // Esto muestra el error en un popup
     }
   };
 
   return (
     <form onSubmit={manejarSubmit}>
-      <h1>Registrarse</h1>
+      <h1>Registro</h1>
       <label>
         Nombre:
         <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />

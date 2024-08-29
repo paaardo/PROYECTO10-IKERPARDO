@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Ruta para registrar un nuevo usuario
 router.post('/registrar', async (req, res) => {
-  const { nombre, correo, contraseña } = req.body;
+  const { nombre, correo, contrasena } = req.body;
 
   try {
     // Verificar si el correo ya está registrado
@@ -18,7 +18,7 @@ router.post('/registrar', async (req, res) => {
     }
 
     // Crear un nuevo usuario
-    usuario = new Usuario({ nombre, correo, contraseña });
+    usuario = new Usuario({ nombre, correo, contrasena });
     await usuario.save();
 
     // Crear un token JWT
@@ -34,7 +34,8 @@ router.post('/registrar', async (req, res) => {
 
 // Ruta para iniciar sesión
 router.post('/login', async (req, res) => {
-  const { correo, contraseña } = req.body;
+  const { correo, contrasena } = req.body;
+  console.log('Contraseña recibida:', contrasena);
 
   try {
     // Verificar si el usuario existe
@@ -44,8 +45,8 @@ router.post('/login', async (req, res) => {
     }
 
     // Verificar la contraseña
-    const esContraseñaValida = await usuario.compararContraseña(contraseña);
-    if (!esContraseñaValida) {
+    const escontrasenaValida = await usuario.compararcontrasena(contrasena); // Usa "compararcontrasena"
+    if (!escontrasenaValida) {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
 
@@ -56,8 +57,12 @@ router.post('/login', async (req, res) => {
 
     res.json({ token, usuario: { id: usuario._id, nombre: usuario.nombre } });
   } catch (error) {
+    console.error('Error en el servidor:', error.message);
     res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 });
+
+
+
 
 module.exports = router;
