@@ -10,7 +10,8 @@ function Registro() {
   const manejarSubmit = async (e) => {
     e.preventDefault();
     try {
-      const respuesta = await fetch('http://localhost:5000/api/register', {
+      // Asegúrate de que la URL sea correcta
+      const respuesta = await fetch('http://localhost:5000/api/usuarios/registrar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -28,6 +28,7 @@ router.post('/registrar', async (req, res) => {
 
     res.status(201).json({ token, usuario: { id: usuario._id, nombre: usuario.nombre } });
   } catch (error) {
+    console.error('Error en el servidor:', error.message);
     res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 });
@@ -35,7 +36,7 @@ router.post('/registrar', async (req, res) => {
 // Ruta para iniciar sesión
 router.post('/login', async (req, res) => {
   const { correo, contrasena } = req.body;
-  console.log('Contraseña recibida:', contrasena);
+  console.log('Contraseña recibida:', contrasena); // Confirmar que la contraseña es la esperada
 
   try {
     // Verificar si el usuario existe
@@ -44,9 +45,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
 
+    console.log('Contraseña en la base de datos:', usuario.contrasena); // Asegúrate de que la contraseña no es undefined
+
     // Verificar la contraseña
-    const escontrasenaValida = await usuario.compararcontrasena(contrasena); // Usa "compararcontrasena"
-    if (!escontrasenaValida) {
+    const esContrasenaValida = await usuario.compararcontrasena(contrasena); // Llama al método correctamente
+    if (!esContrasenaValida) {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
 
@@ -61,7 +64,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ mensaje: 'Error en el servidor' });
   }
 });
-
 
 
 

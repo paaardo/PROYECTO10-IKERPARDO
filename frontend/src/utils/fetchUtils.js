@@ -1,4 +1,3 @@
-// src/utils/fetchUtils.js
 export const hacerFetch = async (url, options) => {
     try {
       const response = await fetch(url, options);
