@@ -59,6 +59,19 @@ router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
     }
   });
   
+// Ruta para obtener los detalles de un evento específico
+router.get('/:id', async (req, res) => {
+  try {
+    const evento = await Evento.findById(req.params.id).populate('asistentes', 'nombre');
+    if (!evento) {
+      return res.status(404).json({ mensaje: 'Evento no encontrado' });
+    }
+    res.json(evento);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
 
 // Obtener eventos ordenados por fecha
 router.get('/ordenados', async (req, res) => {

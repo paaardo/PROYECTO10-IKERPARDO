@@ -1,8 +1,8 @@
-// src/components/ListaEvento.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Cargando from './Cargando';
 import MensajeError from './MensajeError';
+import { hacerFetch } from '../utils/fetchUtils';
 
 function ListaEvento() {
   const [eventos, setEventos] = useState([]);
@@ -12,11 +12,7 @@ function ListaEvento() {
   useEffect(() => {
     const obtenerEventos = async () => {
       try {
-        const respuesta = await fetch('http://localhost:5000/api/eventos');
-        if (!respuesta.ok) {
-          throw new Error('Error al obtener eventos');
-        }
-        const datos = await respuesta.json();
+        const datos = await hacerFetch('http://localhost:5000/api/eventos');
         setEventos(datos);
       } catch (error) {
         setError(error.message);
@@ -40,11 +36,25 @@ function ListaEvento() {
             <Link to={`/eventos/${evento._id}`}>
               {evento.titulo} - {new Date(evento.fecha).toLocaleDateString()}
             </Link>
+            <button onClick={() => confirmarAsistencia(evento._id)}>Confirmar Asistencia</button>
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
+// Simula la acción de confirmar asistencia
+const confirmarAsistencia = async (eventoId) => {
+  try {
+    await hacerFetch(`http://localhost:5000/api/eventos/${eventoId}/confirmar`, {
+      method: 'POST',
+    });
+    alert('Asistencia confirmada');
+  } catch (error) {
+    console.error('Error al confirmar asistencia:', error);
+    alert('No se pudo confirmar la asistencia');
+  }
+};
 
 export default ListaEvento;

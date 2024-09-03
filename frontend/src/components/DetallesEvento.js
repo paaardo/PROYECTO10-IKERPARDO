@@ -1,6 +1,6 @@
-// src/components/DetallesEvento.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { hacerFetch } from '../utils/fetchUtils';
 import Cargando from './Cargando';
 import MensajeError from './MensajeError';
 
@@ -9,15 +9,12 @@ function DetallesEvento() {
   const [evento, setEvento] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const usuarioAutenticado = !!localStorage.getItem('token');  // Verifica si el token está en localStorage
 
   useEffect(() => {
-    const obtenerEvento = async () => {
+    const obtenerDetallesEvento = async () => {
       try {
-        const respuesta = await fetch(`http://localhost:5000/api/eventos/${id}`);
-        if (!respuesta.ok) {
-          throw new Error('Error al obtener el evento');
-        }
-        const datos = await respuesta.json();
+        const datos = await hacerFetch(`http://localhost:5000/api/eventos/${id}`);
         setEvento(datos);
       } catch (error) {
         setError(error.message);
@@ -26,26 +23,8 @@ function DetallesEvento() {
       }
     };
 
-    obtenerEvento();
+    obtenerDetallesEvento();
   }, [id]);
-
-  const manejarAsistencia = async () => {
-    try {
-      const respuesta = await fetch(`http://localhost:5000/api/eventos/${id}/asistir`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (!respuesta.ok) {
-        throw new Error('Error al confirmar asistencia');
-      }
-      alert('Asistencia confirmada');
-      // Actualizar el estado del evento si es necesario
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   if (cargando) return <Cargando />;
   if (error) return <MensajeError mensaje={error} />;
@@ -53,10 +32,18 @@ function DetallesEvento() {
   return (
     <div>
       <h1>{evento.titulo}</h1>
-      <p>{new Date(evento.fecha).toLocaleDateString()}</p>
-      <p>{evento.ubicacion}</p>
       <p>{evento.descripcion}</p>
-      <button onClick={manejarAsistencia}>Confirmar Asistencia</button>
+      <p>Fecha: {new Date(evento.fecha).toLocaleDateString()}</p>
+      {usuarioAutenticado && (
+        <div>
+          <h2>Asistentes</h2>
+          <ul>
+            {evento.asistentes.map(asistente => (
+              <li key={asistente._id}>{asistente.nombre}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../utils/api';
 
 function Registro() {
   const [nombre, setNombre] = useState('');
@@ -10,23 +11,11 @@ function Registro() {
   const manejarSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Asegúrate de que la URL sea correcta
-      const respuesta = await fetch('http://localhost:5000/api/usuarios/registrar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nombre, correo, contrasena }),
-      });
-      if (!respuesta.ok) {
-        const errorData = await respuesta.json();
-        throw new Error(errorData.mensaje || 'Error al registrarse');
-      }
-      const datos = await respuesta.json();
-      localStorage.setItem('token', datos.token);
-      navigate('/eventos');
+      const { data } = await apiClient.post('/usuarios/registrar', { nombre, correo, contrasena });
+      localStorage.setItem('token', data.token);
+      navigate('/');
     } catch (error) {
-      alert(error.message); // Esto muestra el error en un popup
+      alert(error.response?.data?.mensaje || error.message);
     }
   };
 
