@@ -17,25 +17,26 @@ router.get('/', async (req, res) => {
 
 // Ruta para crear un nuevo evento con cartel (requiere autenticación)
 router.post('/', autenticarUsuario, subirFichero.single('cartel'), async (req, res) => {
-    const { titulo, fecha, ubicacion, descripcion } = req.body;
-    const cartel = req.file ? req.file.path : null;
-  
-    try {
-      const nuevoEvento = new Evento({
-        titulo,
-        fecha,
-        ubicacion,
-        descripcion,
-        cartel,
-        asistentes: [],
-      });
-  
-      await nuevoEvento.save();
-      res.status(201).json(nuevoEvento);
-    } catch (error) {
-      res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
-  });
+  const { titulo, fecha, ubicacion, descripcion } = req.body;
+  const cartel = req.file ? req.file.filename : null; // Guarda solo el nombre del archivo
+
+  try {
+    const nuevoEvento = new Evento({
+      titulo,
+      fecha,
+      ubicacion,
+      descripcion,
+      cartel,
+      asistentes: [],
+    });
+
+    await nuevoEvento.save();
+    res.status(201).json(nuevoEvento);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
 
 // Ruta para confirmar asistencia a un evento (requiere autenticación)
 router.post('/:id/asistir', autenticarUsuario, async (req, res) => {

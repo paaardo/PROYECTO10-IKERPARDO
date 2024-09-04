@@ -36,25 +36,11 @@ function ListaEvento() {
             <Link to={`/eventos/${evento._id}`}>
               {evento.titulo} - {new Date(evento.fecha).toLocaleDateString()}
             </Link>
-            <button onClick={() => confirmarAsistencia(evento._id)}>Confirmar Asistencia</button>
           </li>
         ))}
       </ul>
     </div>
   );
 }
-
-// Simula la acción de confirmar asistencia
-const confirmarAsistencia = async (eventoId) => {
-  try {
-    await hacerFetch(`http://localhost:5000/api/eventos/${eventoId}/confirmar`, {
-      method: 'POST',
-    });
-    alert('Asistencia confirmada');
-  } catch (error) {
-    console.error('Error al confirmar asistencia:', error);
-    alert('No se pudo confirmar la asistencia');
-  }
-};
 
 export default ListaEvento;

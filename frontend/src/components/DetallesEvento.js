@@ -1,48 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { hacerFetch } from '../utils/fetchUtils';
-import Cargando from './Cargando';
-import MensajeError from './MensajeError';
+import apiClient from '../utils/api';  // Usando axios configurado con interceptor
 
 function DetallesEvento() {
   const { id } = useParams();
   const [evento, setEvento] = useState(null);
-  const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  const usuarioAutenticado = !!localStorage.getItem('token');  // Verifica si el token está en localStorage
+  const [autenticado, setAutenticado] = useState(false);
 
   useEffect(() => {
+    const verificarAutenticacion = () => {
+      const token = localStorage.getItem('token');
+      setAutenticado(!!token);
+    };
+
     const obtenerDetallesEvento = async () => {
       try {
-        const datos = await hacerFetch(`http://localhost:5000/api/eventos/${id}`);
-        setEvento(datos);
+        const { data } = await apiClient.get(`/eventos/${id}`);
+        setEvento(data);
       } catch (error) {
-        setError(error.message);
-      } finally {
-        setCargando(false);
+        setError('Error al obtener los detalles del evento');
       }
     };
 
+    verificarAutenticacion();
     obtenerDetallesEvento();
   }, [id]);
 
-  if (cargando) return <Cargando />;
-  if (error) return <MensajeError mensaje={error} />;
+  const confirmarAsistencia = async () => {
+    try {
+      await apiClient.post(`/eventos/${id}/asistir`);
+      alert('Asistencia confirmada');
+    } catch (error) {
+      alert('No se pudo confirmar asistencia');
+    }
+  };
+
+  if (error) return <div>{error}</div>;
+  if (!evento) return <div>Cargando...</div>;
+
+  // Construir la URL de la imagen correctamente
+  const imagenUrl = evento.cartel ? `http://localhost:5000/uploads/${evento.cartel}` : null;
 
   return (
     <div>
       <h1>{evento.titulo}</h1>
-      <p>{evento.descripcion}</p>
-      <p>Fecha: {new Date(evento.fecha).toLocaleDateString()}</p>
-      {usuarioAutenticado && (
+      {imagenUrl && (
         <div>
-          <h2>Asistentes</h2>
-          <ul>
-            {evento.asistentes.map(asistente => (
-              <li key={asistente._id}>{asistente.nombre}</li>
-            ))}
-          </ul>
+          <img src={imagenUrl} alt="Cartel del Evento" style={{ maxWidth: '100%', height: 'auto' }} />
         </div>
+      )}
+      <p>Fecha: {new Date(evento.fecha).toLocaleDateString()}</p>
+      <p>Ubicación: {evento.ubicacion}</p>
+      <p>{evento.descripcion}</p>
+      <h3>Asistentes:</h3>
+      <ul>
+        {evento.asistentes.map(asistente => (
+          <li key={asistente._id}>{asistente.nombre}</li>
+        ))}
+      </ul>
+      {autenticado && (
+        <button onClick={confirmarAsistencia}>Confirmar asistencia</button>
       )}
     </div>
   );

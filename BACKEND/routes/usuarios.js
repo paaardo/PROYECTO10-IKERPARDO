@@ -36,7 +36,6 @@ router.post('/registrar', async (req, res) => {
 // Ruta para iniciar sesión
 router.post('/login', async (req, res) => {
   const { correo, contrasena } = req.body;
-  console.log('Contraseña recibida:', contrasena); // Confirmar que la contraseña es la esperada
 
   try {
     // Verificar si el usuario existe
@@ -44,8 +43,6 @@ router.post('/login', async (req, res) => {
     if (!usuario) {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
-
-    console.log('Contraseña en la base de datos:', usuario.contrasena); // Asegúrate de que la contraseña no es undefined
 
     // Verificar la contraseña
     const esContrasenaValida = await usuario.compararcontrasena(contrasena); // Llama al método correctamente
