@@ -60,6 +60,20 @@ router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
     }
   });
   
+// Obtener eventos ordenados por fecha
+router.get('/ordenados', async (req, res) => {
+  console.log('Solicitud recibida en /api/eventos/ordenados');
+  try {
+    const eventos = await Evento.find().sort({ fecha: 1 });
+    console.log('Eventos obtenidos:', eventos);
+
+    res.json(eventos);
+  } catch (error) {
+    console.error('Error al obtener eventos:', error.message);
+    res.status(500).json({ mensaje: 'Error al obtener los eventos', error: error.message });
+  }
+});
+
 // Ruta para obtener los detalles de un evento específico
 router.get('/:id', async (req, res) => {
   try {
@@ -74,14 +88,5 @@ router.get('/:id', async (req, res) => {
 });
 
 
-// Obtener eventos ordenados por fecha
-router.get('/ordenados', async (req, res) => {
-    try {
-      const eventos = await Evento.find().sort({ fecha: 1 }); // Orden ascendente por fecha
-      res.json(eventos);
-    } catch (error) {
-      res.status(500).json({ mensaje: 'Error al obtener los eventos' });
-    }
-  });
   
 module.exports = router;
