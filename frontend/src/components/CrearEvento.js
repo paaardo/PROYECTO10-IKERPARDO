@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Cargando from './Cargando';  // Importamos el componente de loading
+import Cargando from './Cargando';
 
 function CrearEvento() {
   const [titulo, setTitulo] = useState('');
@@ -8,7 +8,7 @@ function CrearEvento() {
   const [ubicacion, setUbicacion] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [cartel, setCartel] = useState(null);
-  const [cargando, setCargando] = useState(false);  // Nuevo estado para loading
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +18,6 @@ function CrearEvento() {
     }
   }, [navigate]);
 
-  // Obtener la fecha y hora actuales en formato YYYY-MM-DDTHH:MM
   const fechaMinima = new Date().toISOString().slice(0, 16);
 
   const manejarSubmit = async (e) => {
@@ -29,7 +28,7 @@ function CrearEvento() {
       return;
     }
 
-    setCargando(true);  // Empezamos el estado de cargando antes de la solicitud
+    setCargando(true); 
 
     const formData = new FormData();
     formData.append('titulo', titulo);
@@ -52,18 +51,18 @@ function CrearEvento() {
         throw new Error('Error al crear el evento');
       }
       alert('Evento creado exitosamente');
-      navigate('/');  // Redirige a la lista de eventos después de crear
+      navigate('/'); 
     } catch (error) {
       alert(error.message);
     } finally {
-      setCargando(false);  // Terminamos el estado de cargando
+      setCargando(false); 
     }
   };
 
   return (
     <>
       {cargando ? (
-        <Cargando />  // Mostrar loading si está cargando
+        <Cargando /> 
       ) : (
         <form onSubmit={manejarSubmit}>
           <h1>Crear Evento</h1>
@@ -78,7 +77,7 @@ function CrearEvento() {
               value={fecha} 
               onChange={(e) => setFecha(e.target.value)} 
               required 
-              min={fechaMinima}  // Establecer la fecha mínima
+              min={fechaMinima} 
             />
           </label>
           <label>

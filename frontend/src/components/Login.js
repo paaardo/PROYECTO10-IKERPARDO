@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../utils/api';  // Importar apiClient en lugar de usar fetch
+import apiClient from '../utils/api';  
 
 function Login() {
   const [correo, setCorreo] = useState('');
@@ -13,7 +13,7 @@ function Login() {
       const { data } = await apiClient.post('/usuarios/login', { correo, contrasena });
       localStorage.setItem('token', data.token);
       console.log('Login exitoso, redirigiendo...');
-      navigate('/');  // Redirigir a la lista de eventos
+      navigate('/');
     } catch (error) {
       alert(error.response?.data?.mensaje || error.message);
     }

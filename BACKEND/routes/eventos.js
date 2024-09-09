@@ -5,7 +5,6 @@ const subirFichero = require('../middlewares/subirFichero');
 
 const router = express.Router();
 
-// Ruta para obtener todos los eventos
 router.get('/', async (req, res) => {
   try {
     const eventos = await Evento.find().populate('asistentes', 'nombre');
@@ -15,10 +14,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Ruta para crear un nuevo evento con cartel (requiere autenticación)
 router.post('/', autenticarUsuario, subirFichero.single('cartel'), async (req, res) => {
   const { titulo, fecha, ubicacion, descripcion } = req.body;
-  const cartel = req.file ? req.file.filename : null; // Guarda solo el nombre del archivo
+  const cartel = req.file ? req.file.filename : null;
 
   try {
     const nuevoEvento = new Evento({
@@ -37,8 +35,6 @@ router.post('/', autenticarUsuario, subirFichero.single('cartel'), async (req, r
   }
 });
 
-
-// Ruta para confirmar asistencia a un evento (requiere autenticación)
 router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
     try {
       const evento = await Evento.findById(req.params.id);
@@ -47,7 +43,6 @@ router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
         return res.status(404).json({ mensaje: 'Evento no encontrado' });
       }
   
-      // Verificar si el usuario ya está en la lista de asistentes
       if (!evento.asistentes.includes(req.usuario.id)) {
         evento.asistentes.push(req.usuario.id);
         await evento.save();
@@ -60,7 +55,6 @@ router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
     }
   });
   
-// Obtener eventos ordenados por fecha
 router.get('/ordenados', async (req, res) => {
   console.log('Solicitud recibida en /api/eventos/ordenados');
   try {
@@ -74,7 +68,6 @@ router.get('/ordenados', async (req, res) => {
   }
 });
 
-// Ruta para obtener los detalles de un evento específico
 router.get('/:id', async (req, res) => {
   try {
     const evento = await Evento.findById(req.params.id).populate('asistentes', 'nombre');

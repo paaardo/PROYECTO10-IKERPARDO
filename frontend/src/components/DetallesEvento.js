@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import apiClient from '../utils/api';  // Usando axios configurado con interceptor
+import apiClient from '../utils/api'; 
 
 function DetallesEvento() {
   const { id } = useParams();
@@ -39,7 +39,6 @@ function DetallesEvento() {
   if (error) return <div>{error}</div>;
   if (!evento) return <div>Cargando...</div>;
 
-  // Construir la URL de la imagen correctamente
   const imagenUrl = evento.cartel ? `http://localhost:5000/uploads/${evento.cartel}` : null;
 
   return (
@@ -60,7 +59,7 @@ function DetallesEvento() {
         ))}
       </ul>
       {autenticado && (
-        <button onClick={confirmarAsistencia}>Confirmar asistencia</button>
+        <button className="confirmar-asistencia" onClick={confirmarAsistencia}>Confirmar asistencia</button>
       )}
     </div>
   );

@@ -8,7 +8,7 @@ function ListaEvento() {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  const [ordenado, setOrdenado] = useState(false);  // Estado para controlar el orden
+  const [ordenado, setOrdenado] = useState(false);  
 
   useEffect(() => {
     const obtenerEventos = async () => {
@@ -16,7 +16,6 @@ function ListaEvento() {
         const url = ordenado
           ? 'http://localhost:5000/api/eventos/ordenados'
           : 'http://localhost:5000/api/eventos';
-
         const datos = await hacerFetch(url);
         setEventos(datos);
       } catch (error) {
@@ -27,11 +26,11 @@ function ListaEvento() {
     };
 
     obtenerEventos();
-  }, [ordenado]);  // Actualizar cuando cambie el estado de "ordenado"
+  }, [ordenado]);  
 
   const cambiarOrden = () => {
-    setCargando(true);  // Muestra el loading durante el cambio de orden
-    setOrdenado(!ordenado);  // Alterna entre ordenado y no ordenado
+    setCargando(true); 
+    setOrdenado(!ordenado);  
   };
 
   if (cargando) return <Cargando />;

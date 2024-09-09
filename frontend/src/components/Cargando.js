@@ -1,5 +1,5 @@
 import React from 'react';
-import '../index.css'; // Importamos los estilos CSS para el spinner
+import '../index.css';
 
 function Cargando() {
   return (

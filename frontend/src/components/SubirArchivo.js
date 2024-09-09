@@ -1,4 +1,3 @@
-// src/components/SubirArchivo.js
 import React, { useState } from 'react';
 
 function SubirArchivo() {

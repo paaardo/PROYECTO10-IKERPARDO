@@ -5,7 +5,7 @@ const EventoSchema = new mongoose.Schema({
   fecha: { type: Date, required: true },
   ubicacion: { type: String, required: true },
   descripcion: { type: String, required: true },
-  cartel: { type: String }, // Ruta del archivo subido
+  cartel: { type: String },
   asistentes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' }]
 });
 

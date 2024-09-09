@@ -1,27 +1,21 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuario');
-const autenticarUsuario = require('../middlewares/autenticacion');
 
 const router = express.Router();
 
-// Ruta para registrar un nuevo usuario
 router.post('/registrar', async (req, res) => {
   const { nombre, correo, contrasena } = req.body;
 
   try {
-    // Verificar si el correo ya está registrado
     let usuario = await Usuario.findOne({ correo });
     if (usuario) {
       return res.status(400).json({ mensaje: 'El correo ya está registrado' });
     }
 
-    // Crear un nuevo usuario
     usuario = new Usuario({ nombre, correo, contrasena });
     await usuario.save();
 
-    // Crear un token JWT
     const token = jwt.sign({ id: usuario._id, nombre: usuario.nombre }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
@@ -33,24 +27,20 @@ router.post('/registrar', async (req, res) => {
   }
 });
 
-// Ruta para iniciar sesión
 router.post('/login', async (req, res) => {
   const { correo, contrasena } = req.body;
 
   try {
-    // Verificar si el usuario existe
     let usuario = await Usuario.findOne({ correo });
     if (!usuario) {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
 
-    // Verificar la contraseña
-    const esContrasenaValida = await usuario.compararcontrasena(contrasena); // Llama al método correctamente
+    const esContrasenaValida = await usuario.compararcontrasena(contrasena);
     if (!esContrasenaValida) {
       return res.status(400).json({ mensaje: 'Credenciales incorrectas' });
     }
 
-    // Crear un token JWT
     const token = jwt.sign({ id: usuario._id, nombre: usuario.nombre }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
