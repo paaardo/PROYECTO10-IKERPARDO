@@ -15,7 +15,7 @@ function Registro() {
       const { data } = await apiClient.post('/usuarios/registrar', { nombre, correo, contrasena });
       localStorage.setItem('token', data.token);
       setMensaje({ texto: 'Registro exitoso. Redirigiendo...', tipo: 'informativo' });
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/'), 1000);
     } catch (error) {
       setMensaje({ texto: error.response?.data?.mensaje || error.message, tipo: 'error' });
     }

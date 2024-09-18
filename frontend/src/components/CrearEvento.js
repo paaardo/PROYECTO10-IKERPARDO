@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cargando from './Cargando';
 
@@ -11,8 +11,10 @@ function CrearEvento() {
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
+  const archivoInputRef = useRef(null);
 
   useEffect(() => {
+    console.log('token');
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -22,7 +24,7 @@ function CrearEvento() {
   const fechaMinima = new Date().toISOString().slice(0, 16);
 
   const validarExtension = (file) => {
-    const extensionesPermitidas = /jpeg|jpg|png/i;
+    const extensionesPermitidas = /jpeg|jpg|png|gif/i;
     const extension = file.name.split('.').pop().toLowerCase();
     return extensionesPermitidas.test(extension);
   };
@@ -36,7 +38,11 @@ function CrearEvento() {
     }
 
     if (cartel && !validarExtension(cartel)) {
-      setMensaje({ texto: 'Solo se permiten archivos JPG, JPEG o PNG', tipo: 'error' });
+      setMensaje({ texto: 'Solo se permiten archivos JPG, JPEG, PNG o GIF', tipo: 'error' });
+      setCartel(null);
+      if (archivoInputRef.current) {
+        archivoInputRef.current.value = '';
+      }
       return;
     }
 
@@ -110,7 +116,11 @@ function CrearEvento() {
           </label>
           <label>
             Cartel:
-            <input type="file" onChange={(e) => setCartel(e.target.files[0])} />
+            <input 
+              type="file" 
+              ref={archivoInputRef}
+              onChange={(e) => setCartel(e.target.files[0])} 
+            />
           </label>
           <button type="submit">Crear Evento</button>
         </form>

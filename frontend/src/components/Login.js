@@ -17,12 +17,13 @@ function Login() {
       console.log('Login exitoso, redirigiendo...');
       navigate('/');
     } catch (error) {
-      const mensajeError = error.response?.status === 401
+      const mensajeError = error.response?.status === 400
         ? 'Credenciales Incorrectas'
         : 'Error al iniciar sesión';
       setError(mensajeError);
     }
   };
+  
 
   return (
     <form onSubmit={manejarSubmit}>

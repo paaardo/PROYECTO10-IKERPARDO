@@ -40,9 +40,10 @@ function DetallesEvento() {
       const { data } = await apiClient.get(`/eventos/${id}`);
       setEvento(data);
     } catch (error) {
-      alert('No se pudo confirmar asistencia');
+      console.log('No se pudo confirmar asistencia:', error);
     }
   };
+  
 
   if (error) return <div>{error}</div>;
   if (!evento) return <div>Cargando...</div>;

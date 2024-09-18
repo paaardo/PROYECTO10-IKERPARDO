@@ -1,40 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Cargando from './Cargando';
-import MensajeError from './MensajeError';
-import { hacerFetch } from '../utils/fetchUtils';
+import apiClient from '../utils/api'; 
 
 function ListaEvento() {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  const [ordenado, setOrdenado] = useState(false);  
+  const [ordenado, setOrdenado] = useState(false);
 
   useEffect(() => {
     const obtenerEventos = async () => {
       try {
         const url = ordenado
-          ? 'http://localhost:5000/api/eventos/ordenados'
-          : 'http://localhost:5000/api/eventos';
-        const datos = await hacerFetch(url);
-        setEventos(datos);
+          ? '/eventos/ordenados'
+          : '/eventos';
+        const { data } = await apiClient.get(url);
+        setEventos(data);
       } catch (error) {
-        setError(error.message);
+        const mensajeError = error.response?.data?.mensaje || 'Error al obtener eventos';
+        setError(mensajeError);
       } finally {
         setCargando(false);
       }
     };
 
     obtenerEventos();
-  }, [ordenado]);  
+  }, [ordenado]);
 
   const cambiarOrden = () => {
-    setCargando(true); 
-    setOrdenado(!ordenado);  
+    setCargando(true);
+    setOrdenado(!ordenado);
   };
 
   if (cargando) return <Cargando />;
-  if (error) return <MensajeError mensaje={error} />;
+  if (error) return <div className="mensaje-error">Error: {error}</div>;
 
   return (
     <div className="contenedor-eventos">
