@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', autenticarUsuario, subirFichero.single('cartel'), async (req, res) => {
   const { titulo, fecha, ubicacion, descripcion } = req.body;
-  const cartel = req.file ? req.file.filename : null;
+  const cartel = req.file ? req.file.filename : 'imagen_por_defecto.jpg';
 
   try {
     const nuevoEvento = new Evento({
@@ -36,24 +36,25 @@ router.post('/', autenticarUsuario, subirFichero.single('cartel'), async (req, r
 });
 
 router.post('/:id/asistir', autenticarUsuario, async (req, res) => {
-    try {
-      const evento = await Evento.findById(req.params.id);
-  
-      if (!evento) {
-        return res.status(404).json({ mensaje: 'Evento no encontrado' });
-      }
-  
-      if (!evento.asistentes.includes(req.usuario.id)) {
-        evento.asistentes.push(req.usuario.id);
-        await evento.save();
-        return res.json({ mensaje: 'Asistencia confirmada', evento });
-      } else {
-        return res.status(400).json({ mensaje: 'Ya has confirmado asistencia a este evento' });
-      }
-    } catch (error) {
-      res.status(500).json({ mensaje: 'Error en el servidor' });
+  try {
+    const evento = await Evento.findById(req.params.id);
+
+    if (!evento) {
+      return res.status(404).json({ mensaje: 'Evento no encontrado' });
     }
-  });
+
+    if (!evento.asistentes.includes(req.usuario.id)) {
+      evento.asistentes.push(req.usuario.id);
+      await evento.save();
+      return res.json({ mensaje: 'Asistencia confirmada', evento });
+    } else {
+      return res.status(400).json({ mensaje: 'Ya has confirmado asistencia a este evento' });
+    }
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
+
   
 router.get('/ordenados', async (req, res) => {
   console.log('Solicitud recibida en /api/eventos/ordenados');
@@ -80,6 +81,21 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/:id/asistido', autenticarUsuario, async (req, res) => {
+  try {
+    const evento = await Evento.findById(req.params.id);
+  
+    if (!evento) {
+      return res.status(404).json({ mensaje: 'Evento no encontrado' });
+    }
+
+    const confirmado = evento.asistentes.includes(req.usuario.id);
+
+    res.json({ confirmado });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
+});
 
   
 module.exports = router;

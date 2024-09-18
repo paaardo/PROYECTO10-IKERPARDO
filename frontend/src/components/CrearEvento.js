@@ -8,6 +8,7 @@ function CrearEvento() {
   const [ubicacion, setUbicacion] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [cartel, setCartel] = useState(null);
+  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
@@ -20,11 +21,22 @@ function CrearEvento() {
 
   const fechaMinima = new Date().toISOString().slice(0, 16);
 
+  const validarExtension = (file) => {
+    const extensionesPermitidas = /jpeg|jpg|png/i;
+    const extension = file.name.split('.').pop().toLowerCase();
+    return extensionesPermitidas.test(extension);
+  };
+
   const manejarSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      setMensaje({ texto: 'No tienes autorización para crear eventos', tipo: 'error' });
+      return;
+    }
+
+    if (cartel && !validarExtension(cartel)) {
+      setMensaje({ texto: 'Solo se permiten archivos JPG, JPEG o PNG', tipo: 'error' });
       return;
     }
 
@@ -47,13 +59,16 @@ function CrearEvento() {
         },
         body: formData,
       });
+      const datos = await respuesta.json();
+      
       if (!respuesta.ok) {
-        throw new Error('Error al crear el evento');
+        throw new Error(datos.mensaje || 'Error al crear el evento');
       }
-      alert('Evento creado exitosamente');
-      navigate('/'); 
+
+      setMensaje({ texto: 'Evento creado exitosamente. Redirigiendo...', tipo: 'informativo' });
+      setTimeout(() => navigate('/'), 800); 
     } catch (error) {
-      alert(error.message);
+      setMensaje({ texto: error.message, tipo: 'error' });
     } finally {
       setCargando(false); 
     }
@@ -66,6 +81,11 @@ function CrearEvento() {
       ) : (
         <form onSubmit={manejarSubmit}>
           <h1>Crear Evento</h1>
+          {mensaje.texto && (
+            <div className={`mensaje ${mensaje.tipo === 'error' ? 'mensaje-error' : 'mensaje-informativo'}`}>
+              {mensaje.texto}
+            </div>
+          )}
           <label>
             Título:
             <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} required />

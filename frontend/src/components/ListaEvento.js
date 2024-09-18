@@ -37,21 +37,29 @@ function ListaEvento() {
   if (error) return <MensajeError mensaje={error} />;
 
   return (
-    <div>
-        <h1>Lista de Eventos</h1>
-        <button onClick={cambiarOrden}>
-          {ordenado ? 'Ordenar por defecto' : 'Ordenar por fecha'}
-        </button>
-        <ul>
-    {eventos.map(evento => (
-      <li key={evento._id}>
-        <Link to={`/eventos/${evento._id}`}>
-          {evento.titulo} - {new Date(evento.fecha).toLocaleDateString()}
-        </Link>
-      </li>
-    ))}
-  </ul>
-</div>
+    <div className="contenedor-eventos">
+      <h1>Lista de Eventos</h1>
+      <button onClick={cambiarOrden}>
+        {ordenado ? 'Ordenar por defecto' : 'Ordenar por fecha'}
+      </button>
+      <div className="tarjetas-eventos">
+        {eventos.map(evento => (
+          <div key={evento._id} className="tarjeta-evento">
+            <img 
+              src={`http://localhost:5000/uploads/${evento.cartel}`} 
+              alt={`Cartel de ${evento.titulo}`} 
+              className="imagen-evento"
+            />
+            <div className="contenido-evento">
+              <h3>{evento.titulo}</h3>
+              <p>{new Date(evento.fecha).toLocaleDateString()}</p>
+              <p>{evento.descripcion}</p>
+              <Link to={`/eventos/${evento._id}`} className="enlace-detalles">Ver detalles</Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

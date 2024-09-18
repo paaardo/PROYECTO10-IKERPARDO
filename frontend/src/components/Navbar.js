@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const token = localStorage.getItem('token');
@@ -12,20 +12,22 @@ function Navbar() {
 
   return (
     <nav>
-      <ul>
-        <li><Link to="/">Eventos</Link></li>
+      <div className="left">
+        <button onClick={() => navigate('/')}>Eventos</button>
+      </div>
+      <div className="right">
         {token ? (
           <>
-            <li><Link to="/crear-evento">Crear Evento</Link></li>
-            <li><button onClick={manejarLogout}>Cerrar Sesión</button></li>
+            <button onClick={() => navigate('/crear-evento')}>Crear Evento</button>
+            <button onClick={manejarLogout}>Cerrar Sesión</button>
           </>
         ) : (
           <>
-            <li><Link to="/login">Iniciar Sesión</Link></li>
-            <li><Link to="/register">Registrarse</Link></li>
+            <button onClick={() => navigate('/login')}>Iniciar Sesión</button>
+            <button onClick={() => navigate('/register')}>Registrarse</button>
           </>
         )}
-      </ul>
+      </div>
     </nav>
   );
 }

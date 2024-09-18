@@ -7,6 +7,7 @@ function DetallesEvento() {
   const [evento, setEvento] = useState(null);
   const [error, setError] = useState(null);
   const [autenticado, setAutenticado] = useState(false);
+  const [asistenciaConfirmada, setAsistenciaConfirmada] = useState(false);
 
   useEffect(() => {
     const verificarAutenticacion = () => {
@@ -18,6 +19,11 @@ function DetallesEvento() {
       try {
         const { data } = await apiClient.get(`/eventos/${id}`);
         setEvento(data);
+        const token = localStorage.getItem('token');
+        if (token) {
+          const usuarioId = JSON.parse(atob(token.split('.')[1])).id;
+          setAsistenciaConfirmada(data.asistentes.some(asistente => asistente._id === usuarioId));
+        }
       } catch (error) {
         setError('Error al obtener los detalles del evento');
       }
@@ -30,7 +36,9 @@ function DetallesEvento() {
   const confirmarAsistencia = async () => {
     try {
       await apiClient.post(`/eventos/${id}/asistir`);
-      alert('Asistencia confirmada');
+      setAsistenciaConfirmada(true);
+      const { data } = await apiClient.get(`/eventos/${id}`);
+      setEvento(data);
     } catch (error) {
       alert('No se pudo confirmar asistencia');
     }
@@ -42,24 +50,34 @@ function DetallesEvento() {
   const imagenUrl = evento.cartel ? `http://localhost:5000/uploads/${evento.cartel}` : null;
 
   return (
-    <div>
+    <div className="detalles-evento">
       <h1>{evento.titulo}</h1>
       {imagenUrl && (
         <div>
-          <img src={imagenUrl} alt="Cartel del Evento" style={{ maxWidth: '100%', height: 'auto' }} />
+          <img src={imagenUrl} alt="Cartel del Evento" />
         </div>
       )}
       <p>Fecha: {new Date(evento.fecha).toLocaleDateString()}</p>
       <p>Ubicación: {evento.ubicacion}</p>
       <p>{evento.descripcion}</p>
       <h3>Asistentes:</h3>
-      <ul>
-        {evento.asistentes.map(asistente => (
-          <li key={asistente._id}>{asistente.nombre}</li>
-        ))}
+      <ul className="asistentes">
+        {evento.asistentes.length > 0 ? (
+          evento.asistentes.map(asistente => (
+            <li key={asistente._id}>{asistente.nombre}</li>
+          ))
+        ) : (
+          <p>No hay asistentes confirmados aún.</p>
+        )}
       </ul>
       {autenticado && (
-        <button className="confirmar-asistencia" onClick={confirmarAsistencia}>Confirmar asistencia</button>
+        <button 
+          className="confirmar-asistencia" 
+          onClick={confirmarAsistencia}
+          disabled={asistenciaConfirmada}
+        >
+          {asistenciaConfirmada ? 'Asistencia Confirmada' : 'Confirmar asistencia'}
+        </button>
       )}
     </div>
   );

@@ -9,6 +9,20 @@ function SubirArchivo() {
 
   const manejarSubmit = async (e) => {
     e.preventDefault();
+
+    if (!archivo) {
+      console.error('Por favor, seleccione un archivo.');
+      return;
+    }
+
+    const extension = archivo.name.split('.').pop().toLowerCase();
+    const extensionesPermitidas = ['jpg', 'jpeg', 'png'];
+
+    if (!extensionesPermitidas.includes(extension)) {
+      console.error('Solo se permiten archivos JPG, JPEG o PNG');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('archivo', archivo);
 
@@ -20,12 +34,14 @@ function SubirArchivo() {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
+
       if (!respuesta.ok) {
         throw new Error('Error al subir el archivo');
       }
-      alert('Archivo subido exitosamente');
+
+      console.log('Archivo subido exitosamente');
     } catch (error) {
-      alert(error.message);
+      console.error('Error al subir el archivo:', error.message);
     }
   };
 
