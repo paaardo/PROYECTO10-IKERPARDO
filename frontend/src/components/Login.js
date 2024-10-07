@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../utils/api';  
+import apiClient from '../utils/api';
 
-function Login() {
+function Login({ setToken }) { 
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
@@ -14,6 +14,7 @@ function Login() {
     try {
       const { data } = await apiClient.post('/usuarios/login', { correo, contrasena });
       localStorage.setItem('token', data.token);
+      setToken(data.token);
       console.log('Login exitoso, redirigiendo...');
       navigate('/');
     } catch (error) {
@@ -23,7 +24,6 @@ function Login() {
       setError(mensajeError);
     }
   };
-  
 
   return (
     <form onSubmit={manejarSubmit}>

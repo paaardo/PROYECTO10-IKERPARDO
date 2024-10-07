@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Registro from './components/Registro';
@@ -8,18 +8,19 @@ import CrearEvento from './components/CrearEvento';
 import Navbar from './components/Navbar';
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.removeItem('token');
+    const handleStorageChange = () => {
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+      console.log('Token actualizado:', storedToken);
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('storage', handleStorageChange);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
-
-  const token = localStorage.getItem('token');
 
   return (
     <>
@@ -27,7 +28,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ListaEvento />} />
         <Route path="/eventos/:id" element={<DetallesEvento />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Registro />} />
         <Route 
           path="/crear-evento" 

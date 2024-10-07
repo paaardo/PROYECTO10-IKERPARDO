@@ -14,8 +14,8 @@ function CrearEvento() {
   const archivoInputRef = useRef(null);
 
   useEffect(() => {
-    console.log('token');
     const token = localStorage.getItem('token');
+    console.log('Token en CrearEvento:', token);
     if (!token) {
       navigate('/login');
     }
